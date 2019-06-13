@@ -74,6 +74,7 @@ const config = {
     }]
   },
   plugins: [
+	
     new MiniCssExtractPlugin({
       filename: '[name].css',
       chunkFilename: '[id].css'
@@ -105,6 +106,7 @@ const config = {
     compress: true,
     open: true
   }
+  
 };
 
 module.exports = config;
