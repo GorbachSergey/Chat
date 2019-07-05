@@ -1,134 +1,151 @@
 <!DOCTYPE html>
 <html lang="En-Eu">
-<head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-    <title>Chat</title>
-</head>
-<body>
-   
-    <header>
-        <img id="logo" src="./images/logo.png"/>
-		<p id="currentTime" class="text">
-            <time>14:35</time>
-        </p>
-        <p id="onlineTime" class="text">
-            Online <time>00:00</time>
-        </p>
-        <nav>
-            <ul>
-                <li>
-                    <div class="round countMessages">4</div>
-                    <a id="message" href=""> <img src="./images/message.png"/></a>
-                </li>
-                <li>
-                    <a id="profile" title="Редактировать профиль" href=""> <img src="./images/user.png"/></a>
-                </li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <div id="users">
-            <p class="text">
-                Online: <span id="OnlineCount">10</span>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+        />
+        <title>Chat</title>
+    </head>
+    <body>
+        <header>
+            <img id="logo" src="./images/logo.png" />
+            <p id="currentTime" class="text">
+                <time>14:35</time>
             </p>
-            <ul id="userList" class="list">
-                <li class="user">
-                    <div class="avatar">
-                        <img src="./images/man.png" alt="avatar" />
-                    </div>
-                    <div class="userName text">
-                        Serhii Horbach
-                    </div>
-                </li>
-                <li class="user">
-                    <div class="avatar">
-                        <img src="./images/man.png" alt="avatar" />
-                    </div>
-                    <div class="userName text">
-                        Serhii Horbach
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div id="chat">
-            <div id="tabs">
-                <input type="radio" name="tab" value="" id="tab1" checked>
-                <label class="text" for="tab1">Tab 1</label>
-                <input type="radio" name="tab" value="" id="tab2">
-                <label class="text" for="tab2">Tab 2</label>
-                <input type="radio" name="tab" value="" id="tab3">
-                <label class="text" for="tab3">Tab 3</label>
+            <p id="onlineTime" class="text">Online <time>00:00</time></p>
+            <nav>
+                <ul>
+                    <li>
+                        <a id="message" href="">
+                            <div id="countMessages" class="round">4</div>
+                            <img src="./images/message.png" />
+                        </a>
+                    </li>
+                    <li>
+                        <a id="profile" title="Редактировать профиль" href="">
+                            <img src="./images/user.png"
+                        /></a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <div id="users">
+                <p class="text">Online: <span id="OnlineCount">10</span></p>
+                <ul id="userList" class="list">
+                    <li class="user">
+                        <div class="avatar">
+                            <img src="./images/man.png" alt="avatar" />
+                        </div>
+                        <div class="userName text">
+                            Serhii Horbach
+                        </div>
+                    </li>
+                    <li class="user">
+                        <div class="avatar">
+                            <img src="./images/man.png" alt="avatar" />
+                        </div>
+                        <div class="userName text">
+                            Serhii Horbach
+                        </div>
+                    </li>
+                </ul>
             </div>
-            <div id="chat-history">
-                
-                <div class="otherMessage">
-                    <div class="message-data-avatar">
-                        <img  src="./images/man.png" alt="avatar"/>
-                    </div>
-                    <div class="messageContainer">
-                        <div class="message-data-name text">
-                            Olia       
-                        </div>
-                        <div class="message text">
-                            Hi Vincent, how are you? How is the project coming along?   
-                        </div>
-                    </div>
+            <div id="chat">
+                <div id="tabs">
+                    <input type="radio" name="tab" value="" id="tab1" checked />
+                    <label class="text" for="tab1">Tab 1</label>
+                    <input type="radio" name="tab" value="" id="tab2" />
+                    <label class="text" for="tab2">Tab 2</label>
+                    <input type="radio" name="tab" value="" id="tab3" />
+                    <label class="text" for="tab3">Tab 3</label>
                 </div>
-                
-                <div class="myMessage">
-                    <div class="message text">
-                        Hi Vincent, how are you? How is the project coming along?    
+                <div id="chat-history">
+                    <div class="otherMessage">
+                        <div class="message-data-avatar">
+                            <img src="./images/man.png" alt="avatar" />
+                        </div>
+                        <div class="messageContainer">
+                            <div class="message-data-name text">
+                                Olia
+                            </div>
+                            <div class="message text">
+                                Hi Vincent, how are you? How is the project
+                                coming along?
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-            </div>
-            <div id="area">
-                <form id="messageForm" action="" method="POST">
-                    <textarea rows="3" placeholder="Enter your message" name="message"></textarea>
-                    <input class="text" type="submit" value="Send">
-                    <div id="formatButtons">
-                        <div id="bold">
-                            <img src="./images/bold-text-option.png"/>
-                        </div>
-                        <div id="italic">
-                            <img src="./images/italicize-text.png"/>
-                        </div>
-                        <div id="underline">
-                            <img src="./images/underline.png"/>
+                    <div class="myMessage">
+                        <div class="message text">
+                            Hi Vincent, how are you? How is the project coming
+                            along?
                         </div>
                     </div>
-                </form>
-            </div>  
+                </div>
+                <div id="area">
+                    <form id="messageForm" action="" method="POST">
+                        <textarea
+                            rows="3"
+                            placeholder="Enter your message"
+                            name="message"
+                        ></textarea>
+                        <input class="text" type="submit" value="Send" />
+                        <div id="formatButtons">
+                            <div id="bold">
+                                <img src="./images/bold-text-option.png" />
+                            </div>
+                            <div id="italic">
+                                <img src="./images/italicize-text.png" />
+                            </div>
+                            <div id="underline">
+                                <img src="./images/underline.png" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="info">
+                <div class="text">
+                    Total characters
+                    <p id="totalChar">
+                        10
+                    </p>
+                </div>
+                <div class="text">
+                    Number of letters
+                    <p id="countLetters">
+                        10
+                    </p>
+                </div>
+                <div class="text">
+                    Invisible characters
+                    <p id="invisibleChar">
+                        10
+                    </p>
+                </div>
+                <div class="text">
+                    Punctuation marks
+                    <p id="punctuationMark">
+                        10
+                    </p>
+                </div>
+            </div>
+        </main>
+        <div id="overlay">
+            <div id="modalWindow">
+                <h1 class="text">
+                    Login
+                </h1>
+                <input placeholder="Name" type="text" name="login" id="login" />
+                <div class="btns">
+                    <button class="btn text" id="loginBtn">Sing In</button>
+                    <button class="btn text" id="registerBtn">Sign Up</button>
+                </div>
+            </div>
         </div>
-        <div id="info">
-            <div class="text">
-                Total characters
-                <p id="totalChar">
-                    10
-                </p>
-            </div>
-            <div class="text">
-                Number of letters
-                <p id="countLetters">
-                    10
-                </p>
-            </div>
-            <div class="text">
-                Invisible characters
-                <p id="invisibleChar">
-                    10
-                </p>
-            </div>
-            <div class="text">
-                Punctuation marks
-                <p id="punctuationMark">
-                    10
-                </p>
-            </div>
-        </div>
-    </main>
-</body>
+    </body>
 </html>

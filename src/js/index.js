@@ -1,24 +1,10 @@
-import 'babel-polyfill';
-import _ from 'lodash';
+import "babel-polyfill";
+import _ from "lodash";
 
-import './../sass/styles.scss';
+import "./../sass/styles.scss";
 
-// const getHeader = () => {
-//   const helloWebpack = _.join(['Hello', 'webpack!'], ' ');
-//   console.log(helloWebpack);
-//   const element = document.createElement('h1');
+const BASEURL = "https://studentschat.herokuapp.com";
 
-//   element.innerHTML = helloWebpack;
+function createPostRequest() {}
 
-//   return element;
-// };
-
-// document.body.appendChild(getHeader());
-
-// const o = {
-//   foo: {
-//     bar: null
-//   }
-// };
-
-// console.log(o?.foo?.bar?.baz ?? 'default');
+function createGetRequest() {}
