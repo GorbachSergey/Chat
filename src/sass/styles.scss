@@ -72,7 +72,7 @@ a img {
 
     border-radius: 50%;
     overflow: hidden;
-    background: #f37735;
+    background: #ff4500;
     line-height: 1.2em;
     font-size: 1em;
     text-align: center;
@@ -133,20 +133,35 @@ main {
 .user {
     padding: 0px;
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    height: 50px;
+}
+
+.userStatus {
+    margin: 0px;
+    overflow: hidden;
+    font-size: 80%;
+    font-weight: bold;
+    padding-top: 5px;
+    color: #ff4500;
+    padding-left: 10px;
+    margin-right: 5px;
 }
 
 .userName {
+    height: 20px;
+    overflow: hidden;
+    margin: 0px;
     padding-left: 10px;
-    padding-right: 20px;
+    padding-top: 2px;
     overflow: hidden;
     margin-right: 5px;
-    height: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .avatar img {
+    background-image: url("../images/man.png");
+    background-size: cover;
     border: 2px solid #000000;
     border-radius: 50%;
     width: 50px;

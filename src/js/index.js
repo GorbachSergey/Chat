@@ -20,7 +20,7 @@ function createGetRequest(method, callback, errorCallback) {
         }
     };
     request.onerror = function() {
-        // Обработчик ответа в случае неудачного соеденения
+        alert("ERROR");
     };
     request.send();
 }
@@ -32,25 +32,37 @@ loginBtn.addEventListener("click", function() {
             "users",
             function(response) {
                 var usersArray = JSON.parse(response);
+
                 var found = usersArray.some(function(obj) {
                     return obj.username === enteredName;
                 });
 
                 if (found) {
                     var userList = document.getElementById("userList");
+                    var onlineCount = document.getElementById("OnlineCount");
+                    var count = 0;
                     usersArray.forEach(function(obj) {
                         var li = document.createElement("li");
                         li.className = "user";
                         var avatar = document.createElement("div");
                         avatar.className = "avatar";
                         avatar.innerHTML = '<img src="./images/man.png"/>';
-                        var name = document.createElement("div");
+                        var name = document.createElement("p");
                         name.className = "userName text";
                         name.innerHTML = obj.username;
                         li.appendChild(avatar);
                         li.appendChild(name);
+                        if (obj.status === "active") {
+                            var stat = document.createElement("p");
+                            stat.className = "userStatus text";
+                            stat.innerHTML = "Online";
+                            li.appendChild(stat);
+                            count++;
+                        }
                         userList.appendChild(li);
                     });
+
+                    onlineCount.innerHTML = count;
                     document.getElementById("overlay").style.display = "none";
                 } else {
                     alert("Entered name not found");
@@ -61,6 +73,6 @@ loginBtn.addEventListener("click", function() {
             }
         );
     } else {
-        alert("ФФФФФФФФФФФФФФФФФ");
+        alert("Please enter the name");
     }
 });
