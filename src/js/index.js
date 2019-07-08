@@ -6,6 +6,7 @@ import "./../sass/styles.scss";
 const BASE_URL = "https://studentschat.herokuapp.com/";
 
 var loginBtn = document.getElementById("loginBtn");
+var registerBtn = document.getElementById("registerBtn");
 
 function createGetRequest(method, callback, errorCallback) {
     var request = new XMLHttpRequest();
@@ -23,6 +24,25 @@ function createGetRequest(method, callback, errorCallback) {
         alert("ERROR");
     };
     request.send();
+}
+
+function createPosRequest(method, params, callback, errorCallback) {
+    var request = new XMLHttpRequest();
+    request.open("POST", BASE_URL + method, true);
+
+    request.onload = function() {
+        if (request.status >= 200 && request.status < 400) {
+            var response = request.responseText;
+            callback(response);
+        } else {
+            errorCallback(request.status);
+        }
+    };
+    request.onerror = function() {
+        alert("ERROR");
+    };
+    request.setRequestHeader("Content-Type", "application/json");
+    request.send(JSON.stringify(params));
 }
 
 loginBtn.addEventListener("click", function() {
@@ -65,7 +85,7 @@ loginBtn.addEventListener("click", function() {
                     onlineCount.innerHTML = count;
                     document.getElementById("overlay").style.display = "none";
                 } else {
-                    alert("Entered name not found");
+                    setModalWindowHeadLine("Entered name not found", "#FF0000");
                 }
             },
             function() {
@@ -76,3 +96,38 @@ loginBtn.addEventListener("click", function() {
         alert("Please enter the name");
     }
 });
+
+registerBtn.addEventListener("click", function() {
+    var enteredName = document.getElementById("login").value;
+    if (enteredName != "") {
+        createPosRequest(
+            "users/register",
+            { username: enteredName },
+            function(response) {
+                setModalWindowHeadLine(
+                    'Successful registration. Please click the "Sign In" button.',
+                    "#00FF00"
+                );
+            },
+            function(status) {
+                if (status == 403) {
+                    setModalWindowHeadLine(
+                        "This user is already registered",
+                        "#FF0000"
+                    );
+                } else {
+                    alert("ERROR");
+                }
+            }
+        );
+    } else {
+        alert("Please enter the name");
+    }
+});
+
+function setModalWindowHeadLine(text, color) {
+    var modalHeadLine = document.getElementById("modalHeadLine");
+    modalHeadLine.innerHTML = text;
+    modalHeadLine.style.color = color;
+    modalHeadLine.style.fontSize = "100%";
+}
