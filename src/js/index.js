@@ -7,6 +7,9 @@ const BASE_URL = "https://studentschat.herokuapp.com/";
 
 var loginBtn = document.getElementById("loginBtn");
 var registerBtn = document.getElementById("registerBtn");
+var messageInput = document.getElementById("messageInput");
+var currentUserID;
+var users = {};
 
 function createGetRequest(method, callback, errorCallback) {
     var request = new XMLHttpRequest();
@@ -54,14 +57,16 @@ loginBtn.addEventListener("click", function() {
                 var usersArray = JSON.parse(response);
 
                 var found = usersArray.some(function(obj) {
+                    currentUserID = obj.user_id;
                     return obj.username === enteredName;
                 });
-
+                console.log(currentUserID);
                 if (found) {
                     var userList = document.getElementById("userList");
                     var onlineCount = document.getElementById("OnlineCount");
                     var count = 0;
                     usersArray.forEach(function(obj) {
+                        users[obj.user_id] = obj.username;
                         var li = document.createElement("li");
                         li.className = "user";
                         var avatar = document.createElement("div");
@@ -84,6 +89,7 @@ loginBtn.addEventListener("click", function() {
 
                     onlineCount.innerHTML = count;
                     document.getElementById("overlay").style.display = "none";
+                    displayMessages();
                 } else {
                     setModalWindowHeadLine("Entered name not found", "#FF0000");
                 }
@@ -102,7 +108,9 @@ registerBtn.addEventListener("click", function() {
     if (enteredName != "") {
         createPosRequest(
             "users/register",
-            { username: enteredName },
+            {
+                username: enteredName
+            },
             function(response) {
                 setModalWindowHeadLine(
                     'Successful registration. Please click the "Sign In" button.',
@@ -125,9 +133,72 @@ registerBtn.addEventListener("click", function() {
     }
 });
 
+messageInput.oninput = function() {
+    var message = messageInput.value;
+    document.getElementById("totalChar").innerHTML = message.length;
+    document.getElementById("countLetters").innerHTML = (
+        message.match(/[a-zA-ZА-Яа-яЁёа-яА-Я]/g) || []
+    ).length;
+    document.getElementById("invisibleChar").innerHTML = (
+        message.match(/\s/g) || []
+    ).length;
+    //document.getElementById("punctuationMark").innerHTML = (message.match(/()/g) || []).length;
+};
+
 function setModalWindowHeadLine(text, color) {
     var modalHeadLine = document.getElementById("modalHeadLine");
     modalHeadLine.innerHTML = text;
     modalHeadLine.style.color = color;
     modalHeadLine.style.fontSize = "100%";
+}
+
+// function displayUserList(){
+
+// }
+
+function displayMessages() {
+    createGetRequest(
+        "messages",
+        function(response) {
+            var chatHistory = document.getElementById("chat-history");
+            var options = {
+                day: "numeric",
+                month: "numeric",
+                year: "2-digit",
+                hour: "numeric",
+                minute: "numeric"
+            };
+            var messageArray = JSON.parse(response, function(key, value) {
+                if (key == "datetime") return new Date(value);
+                return value;
+            });
+
+            messageArray.forEach(function(obj) {
+                var messageContainer = document.createElement("div");
+                messageContainer.className = "otherMessage";
+                var avatar = document.createElement("div");
+                avatar.className = "message-data-avatar";
+                var messageInfoContainer = document.createElement("div");
+                messageInfoContainer.className = "messageContainer";
+                var name = document.createElement("div");
+                name.className = "message-data-name text";
+                name.innerHTML = users[obj.user_id];
+                var time = document.createElement("span");
+                time.className = "other-message-data-time";
+                time.innerHTML = obj.datetime.toLocaleString("ru", options);
+                var message = document.createElement("div");
+                message.className = "message text";
+                message.innerHTML = obj.message;
+                name.appendChild(time);
+                messageInfoContainer.appendChild(name);
+                messageInfoContainer.appendChild(message);
+                messageContainer.appendChild(avatar);
+                messageContainer.appendChild(messageInfoContainer);
+                chatHistory.appendChild(messageContainer);
+            });
+        },
+        function() {
+            //TODO
+        }
+    );
 }
