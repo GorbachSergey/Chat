@@ -8,8 +8,42 @@ const BASE_URL = "https://studentschat.herokuapp.com/";
 var loginBtn = document.getElementById("loginBtn");
 var registerBtn = document.getElementById("registerBtn");
 var messageInput = document.getElementById("messageInput");
-var currentUserID;
-var users = {};
+
+var boldButton = document.getElementById("bold");
+var italicButton = document.getElementById("italic");
+var underlineButton = document.getElementById("underline");
+var sendMessageBtn = document.getElementById("sendBtn");
+var currentUserID,
+    messageArray,
+    users = {};
+
+boldButton.addEventListener("click", function() {
+    insertMetachars("<strong>", "</strong>");
+});
+
+italicButton.addEventListener("click", function() {
+    insertMetachars("<i>", "</i>");
+});
+
+underlineButton.addEventListener("click", function() {
+    insertMetachars("<u>", "</u>");
+});
+
+function insertMetachars(sStartTag, sEndTag) {
+    var nSelStart = messageInput.selectionStart,
+        nSelEnd = messageInput.selectionEnd,
+        sOldText = messageInput.value;
+    messageInput.value =
+        sOldText.substring(0, nSelStart) +
+        sStartTag +
+        sOldText.substring(nSelStart, nSelEnd) +
+        sEndTag;
+    messageInput.setSelectionRange(
+        nSelStart + sStartTag.length,
+        nSelEnd + sStartTag.length
+    );
+    messageInput.focus();
+}
 
 function createGetRequest(method, callback, errorCallback) {
     var request = new XMLHttpRequest();
@@ -89,7 +123,7 @@ loginBtn.addEventListener("click", function() {
 
                     onlineCount.innerHTML = count;
                     document.getElementById("overlay").style.display = "none";
-                    displayMessages();
+                    getMessages();
                 } else {
                     setModalWindowHeadLine("Entered name not found", "#FF0000");
                 }
@@ -142,7 +176,9 @@ messageInput.oninput = function() {
     document.getElementById("invisibleChar").innerHTML = (
         message.match(/\s/g) || []
     ).length;
-    //document.getElementById("punctuationMark").innerHTML = (message.match(/()/g) || []).length;
+    document.getElementById("punctuationMark").innerHTML = (
+        message.match(/[^\w\sА-Яа-яЁё]/g) || []
+    ).length;
 };
 
 function setModalWindowHeadLine(text, color) {
@@ -152,53 +188,121 @@ function setModalWindowHeadLine(text, color) {
     modalHeadLine.style.fontSize = "100%";
 }
 
-// function displayUserList(){
-
-// }
-
-function displayMessages() {
+function getMessages() {
     createGetRequest(
         "messages",
         function(response) {
             var chatHistory = document.getElementById("chat-history");
-            var options = {
+            chatHistory.innerHTML = "";
+
+            var dateOptions = {
                 day: "numeric",
                 month: "numeric",
-                year: "2-digit",
-                hour: "numeric",
-                minute: "numeric"
+                year: "2-digit"
             };
-            var messageArray = JSON.parse(response, function(key, value) {
+
+            messageArray = JSON.parse(response, function(key, value) {
                 if (key == "datetime") return new Date(value);
                 return value;
             });
 
-            messageArray.forEach(function(obj) {
-                var messageContainer = document.createElement("div");
-                messageContainer.className = "otherMessage";
-                var avatar = document.createElement("div");
-                avatar.className = "message-data-avatar";
-                var messageInfoContainer = document.createElement("div");
-                messageInfoContainer.className = "messageContainer";
-                var name = document.createElement("div");
-                name.className = "message-data-name text";
-                name.innerHTML = users[obj.user_id];
-                var time = document.createElement("span");
-                time.className = "other-message-data-time";
-                time.innerHTML = obj.datetime.toLocaleString("ru", options);
-                var message = document.createElement("div");
-                message.className = "message text";
-                message.innerHTML = obj.message;
-                name.appendChild(time);
-                messageInfoContainer.appendChild(name);
-                messageInfoContainer.appendChild(message);
-                messageContainer.appendChild(avatar);
-                messageContainer.appendChild(messageInfoContainer);
-                chatHistory.appendChild(messageContainer);
+            messageArray.forEach(function(obj, i, arr) {
+                if (
+                    i == 0 ||
+                    obj.datetime.toLocaleString("ru", dateOptions) !=
+                        arr[i - 1].datetime.toLocaleString("ru", dateOptions)
+                ) {
+                    var dateDivider = document.createElement("div");
+                    dateDivider.className = "divider text";
+                    dateDivider.innerHTML = obj.datetime.toLocaleString(
+                        "ru",
+                        dateOptions
+                    );
+                    chatHistory.appendChild(dateDivider);
+                }
+
+                var message;
+
+                if (obj.user_id != currentUserID) {
+                    message = createOtherMessageElement(obj);
+                } else {
+                    message = createMyMessageElement(obj);
+                }
+
+                chatHistory.appendChild(message);
             });
+
+            chatHistory.scrollTop = chatHistory.scrollHeight;
         },
         function() {
             //TODO
         }
     );
+}
+
+sendMessageBtn.addEventListener("click", function() {
+    var message = messageInput.value;
+    if (message != "") {
+        var d = new Date();
+        createPosRequest(
+            "messages",
+            {
+                datetime: d.toISOString(),
+                message: message,
+                user_id: currentUserID
+            },
+            function(response) {
+                getMessages();
+                messageInput.value = "";
+            },
+            function(status) {
+                alert("ERROR");
+            }
+        );
+    }
+});
+
+function createMyMessageElement(obj) {
+    var messageContainer = document.createElement("div");
+    messageContainer.className = "myMessage";
+    var time = document.createElement("div");
+    time.className = "my-message-data-time text";
+    time.innerHTML = obj.datetime.toLocaleString("ru", {
+        hour: "numeric",
+        minute: "numeric"
+    });
+    var message = document.createElement("div");
+    message.className = "message text";
+    message.innerHTML = obj.message;
+    messageContainer.appendChild(time);
+    messageContainer.appendChild(message);
+    return messageContainer;
+}
+
+function createOtherMessageElement(obj) {
+    var messageContainer = document.createElement("div");
+    messageContainer.className = "otherMessage";
+    var messageInfoContainer = document.createElement("div");
+    messageInfoContainer.className = "messageContainer";
+    var avatar = document.createElement("div");
+    avatar.className = "message-data-avatar";
+    avatar.innerHTML = '<img src="./images/man.png"/>';
+    var name = document.createElement("div");
+    name.className = "message-data-name text";
+    name.innerHTML = users[obj.user_id];
+    var time = document.createElement("span");
+    time.className = "other-message-data-time";
+    time.innerHTML = obj.datetime.toLocaleString("ru", {
+        hour: "numeric",
+        minute: "numeric"
+    });
+    var message = document.createElement("div");
+    message.className = "message text";
+    message.innerHTML = obj.message;
+    name.appendChild(time);
+    messageInfoContainer.appendChild(name);
+    messageInfoContainer.appendChild(message);
+    messageContainer.appendChild(avatar);
+    messageContainer.appendChild(messageInfoContainer);
+    return messageContainer;
 }

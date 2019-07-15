@@ -47,47 +47,22 @@
                 <input type="radio" name="tab" value="" id="tab3" />
                 <label class="text" for="tab3">Tab 3</label>
             </div>
-            <div id="chat-history">
-                <div class="otherMessage">
-                    <div class="message-data-avatar">
-
-                    </div>
-                    <div class="messageContainer">
-                        <div class="message-data-name text">
-                            Olia <span class="other-message-data-time">12.03.1997, 13:45</span>
-                        </div>
-                        <div class="message text">
-                            Hi Vincent
-                        </div>
-                    </div>
-                </div>
-
-                <div class="myMessage">
-                    <div class="my-message-data-time text">
-                        12.03.1997, 13:45
-                    </div>
-                    <div class="message text">
-                        Hi Vincent, how are you? How is the project coming
-                        along?
-                    </div>
-                </div>
-            </div>
+            <div id="chat-history"></div>
             <div id="area">
-                <form id="messageForm" action="" method="POST">
-                    <textarea id="messageInput" rows="3" placeholder="Enter your message" name="message"></textarea>
-                    <input class="text" type="submit" value="Send" />
-                    <div id="formatButtons">
-                        <div id="bold">
-                            <img src="./images/bold-text-option.png" />
-                        </div>
-                        <div id="italic">
-                            <img src="./images/italicize-text.png" />
-                        </div>
-                        <div id="underline">
-                            <img src="./images/underline.png" />
-                        </div>
+                <textarea id="messageInput" maxlength="500" rows="3" placeholder="Enter your message"
+                    name="message"></textarea>
+                <button id="sendBtn" class="text">Send</button>
+                <div id="formatButtons">
+                    <div id="bold">
+                        <img src="./images/bold-text-option.png" />
                     </div>
-                </form>
+                    <div id="italic">
+                        <img src="./images/italicize-text.png" />
+                    </div>
+                    <div id="underline">
+                        <img src="./images/underline.png" />
+                    </div>
+                </div>
             </div>
         </div>
         <div id="info">

@@ -102,7 +102,6 @@ main {
 #users,
 #info {
     width: 20%;
-    
 }
 
 #chat {
@@ -124,7 +123,7 @@ main {
     color: #000000;
 }
 
-#userListContainer{
+#userListContainer {
     height: 92%;
     overflow: auto;
 }
@@ -133,7 +132,6 @@ main {
     list-style-type: none;
     padding: 0px 0px 0px 5px;
     margin-top: 5px;
-    
 }
 
 .user {
@@ -209,20 +207,21 @@ main {
 
 #chat-history {
     height: 290px;
-    margin: 1%;
+    padding-top: 10px;
+
+    margin: 0px;
     overflow: auto;
 }
 
 textarea {
-    display: block;
+    //display: block;
     padding: 5px 10px;
-    margin: 0 auto;
-    width: 95%;
-    margin-top: 5px;
+    margin: 5px 0px 0px 10px;
+    width: 93%;
 }
 
-#messageForm > input {
-    margin: 5px 0px 0px 8px;
+#area > button {
+    margin:0px 0px 0px 10px;
     padding: 3px 10px;
     cursor: pointer;
     text-decoration: none;
@@ -232,13 +231,13 @@ textarea {
     font-weight: bold;
 }
 
-#messageForm > input:active {
+#area > button:active {
     background-color: #e0e2ec;
 }
 
 #formatButtons {
     float: right;
-    margin: 5px 3px 0px 0px;
+    margin: 0px 3px 0px 0px;
 }
 
 #formatButtons div {
@@ -258,11 +257,17 @@ textarea {
     height: 20px;
 }
 
+#formatButtons div:active {
+    background-color: #94959b;
+}
+
+
 .otherMessage {
     max-width: 80%;
+    margin-bottom: 15px;
+    padding-left: 5px;
     display: flex;
     align-items: flex-end;
-    margin-bottom: 10px;
     clear: right;
 }
 
@@ -270,27 +275,29 @@ textarea {
     margin-left: 10px;
     background-color: #f1f1f1;
     border-radius: 5px;
+    padding: 3px;
 }
 
-.myMessage {
-    max-width: 70%;
-    float: right;
-    background-color: #ddd;
-    border-radius: 5px;
-    margin: 0px 5px 10px 0px;
-}
-
-.message-data-avatar {
-    background-image: url("../images/man.png");
-    background-size: contain;
+.message-data-avatar img {
     border-radius: 50%;
     width: 40px;
     height: 40px;
 }
 
-.other-message-data-time,.my-message-data-time{
+.myMessage {
+    max-width: 70%;
+    float: right;
+    clear: both;
+    background-color: #ddd;
+    padding: 3px;
+    border-radius: 5px;
+    margin: 0px 5px 15px 0px;
+}
+
+.other-message-data-time,
+.my-message-data-time {
     color: #000000;
-    font-size: 70%; 
+    font-size: 10px;
     text-align: right;
     letter-spacing: 1px;
 }
@@ -301,21 +308,33 @@ textarea {
     display: block;
 }
 
-.my-message-data-time{
+.my-message-data-time {
     font-weight: bold;
-    padding: 5px 5px 0px 0px; 
+    padding: 5px 5px 0px 5px;
 }
 
 .message {
     padding: 5px;
     font-size: 0.9em;
-    word-break: break-all;
+    word-break: break-word;
 }
 
 .message-data-name {
     color: #1180e9;
     font-weight: bold;
-    padding: 5px 5px 0px 5px;
+    font-size: 80%;
+    padding: 5px 5px 5px 5px;
+}
+
+.divider {
+    width: 15%;
+    border-radius: 5px;
+    margin: 0 auto 15px auto;
+    clear: both;
+    background-color: #a0dbc4;
+    padding: 3px;
+    text-align: center;
+    letter-spacing: 1px;
 }
 
 #info div {
