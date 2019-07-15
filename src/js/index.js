@@ -37,11 +37,13 @@ function insertMetachars(sStartTag, sEndTag) {
         sOldText.substring(0, nSelStart) +
         sStartTag +
         sOldText.substring(nSelStart, nSelEnd) +
-        sEndTag;
+        sEndTag +
+        sOldText.substring(nSelEnd);
     messageInput.setSelectionRange(
         nSelStart + sStartTag.length,
         nSelEnd + sStartTag.length
     );
+
     messageInput.focus();
 }
 
