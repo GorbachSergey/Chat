@@ -8,14 +8,33 @@ const BASE_URL = "https://studentschat.herokuapp.com/";
 var loginBtn = document.getElementById("loginBtn");
 var registerBtn = document.getElementById("registerBtn");
 var messageInput = document.getElementById("messageInput");
+var exitBtn = document.getElementById("exit");
 
 var boldButton = document.getElementById("bold");
 var italicButton = document.getElementById("italic");
 var underlineButton = document.getElementById("underline");
 var sendMessageBtn = document.getElementById("sendBtn");
 var currentUserID,
+    messageConter = 0,
+    messagesTimerId,
     messageArray,
+    loginTime,
     users = {};
+
+document.getElementById("userList").addEventListener("click", function(e) {
+    var userId = e.target.id;
+    var userMessages = [];
+    if (userId == currentUserID) {
+        userMessages = messageArray;
+    } else {
+        var userMessages = messageArray.filter(function(item) {
+            return item.user_id == userId || item.user_id == currentUserID;
+        });
+    }
+    displaySelectedUserMessages(userMessages);
+});
+
+messageInput.oninput = displayInfoAboutMessage;
 
 boldButton.addEventListener("click", function() {
     insertMetachars("<strong>", "</strong>");
@@ -96,36 +115,16 @@ loginBtn.addEventListener("click", function() {
                     currentUserID = obj.user_id;
                     return obj.username === enteredName;
                 });
-                console.log(currentUserID);
-                if (found) {
-                    var userList = document.getElementById("userList");
-                    var onlineCount = document.getElementById("OnlineCount");
-                    var count = 0;
-                    usersArray.forEach(function(obj) {
-                        users[obj.user_id] = obj.username;
-                        var li = document.createElement("li");
-                        li.className = "user";
-                        var avatar = document.createElement("div");
-                        avatar.className = "avatar";
-                        avatar.innerHTML = '<img src="./images/man.png"/>';
-                        var name = document.createElement("p");
-                        name.className = "userName text";
-                        name.innerHTML = obj.username;
-                        li.appendChild(avatar);
-                        li.appendChild(name);
-                        if (obj.status === "active") {
-                            var stat = document.createElement("p");
-                            stat.className = "userStatus text";
-                            stat.innerHTML = "Online";
-                            li.appendChild(stat);
-                            count++;
-                        }
-                        userList.appendChild(li);
-                    });
 
-                    onlineCount.innerHTML = count;
-                    document.getElementById("overlay").style.display = "none";
+                if (found) {
+                    loginTime = new Date();
+                    displayUserList(usersArray);
                     getMessages();
+                    messagesTimerId = setInterval(getMessages, 3000);
+                    displayCurrentTime();
+                    setInterval(displayCurrentTime, 1000);
+                    displayOnlineTime();
+                    setInterval(displayOnlineTime, 1000);
                 } else {
                     setModalWindowHeadLine("Entered name not found", "#FF0000");
                 }
@@ -137,6 +136,10 @@ loginBtn.addEventListener("click", function() {
     } else {
         alert("Please enter the name");
     }
+});
+
+exitBtn.addEventListener("click", function() {
+    location.reload();
 });
 
 registerBtn.addEventListener("click", function() {
@@ -169,7 +172,7 @@ registerBtn.addEventListener("click", function() {
     }
 });
 
-messageInput.oninput = function() {
+function displayInfoAboutMessage() {
     var message = messageInput.value;
     document.getElementById("totalChar").innerHTML = message.length;
     document.getElementById("countLetters").innerHTML = (
@@ -181,7 +184,41 @@ messageInput.oninput = function() {
     document.getElementById("punctuationMark").innerHTML = (
         message.match(/[^\w\sА-Яа-яЁё]/g) || []
     ).length;
-};
+}
+
+function displayUserList(usersArray) {
+    var userList = document.getElementById("userList");
+    var onlineCount = document.getElementById("OnlineCount");
+    var count = 0;
+    usersArray.forEach(function(obj) {
+        users[obj.user_id] = obj.username;
+        var li = document.createElement("li");
+        li.className = "user";
+        li.id = obj.user_id;
+        var avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.id = obj.user_id;
+        avatar.innerHTML =
+            '<img id="' + obj.user_id + '"src="./images/man.png"/>';
+        var name = document.createElement("p");
+        name.className = "userName text";
+        name.id = obj.user_id;
+        name.innerHTML = obj.username;
+        li.appendChild(avatar);
+        li.appendChild(name);
+        if (obj.status === "active") {
+            var stat = document.createElement("p");
+            stat.className = "userStatus text";
+            stat.id = obj.user_id;
+            stat.innerHTML = "Online";
+            li.appendChild(stat);
+            count++;
+        }
+        userList.appendChild(li);
+    });
+    onlineCount.innerHTML = count;
+    document.getElementById("overlay").style.display = "none";
+}
 
 function setModalWindowHeadLine(text, color) {
     var modalHeadLine = document.getElementById("modalHeadLine");
@@ -194,47 +231,12 @@ function getMessages() {
     createGetRequest(
         "messages",
         function(response) {
-            var chatHistory = document.getElementById("chat-history");
-            chatHistory.innerHTML = "";
-
-            var dateOptions = {
-                day: "numeric",
-                month: "numeric",
-                year: "2-digit"
-            };
-
-            messageArray = JSON.parse(response, function(key, value) {
+            var newMessageArray = JSON.parse(response, function(key, value) {
                 if (key == "datetime") return new Date(value);
                 return value;
             });
 
-            messageArray.forEach(function(obj, i, arr) {
-                if (
-                    i == 0 ||
-                    obj.datetime.toLocaleString("ru", dateOptions) !=
-                        arr[i - 1].datetime.toLocaleString("ru", dateOptions)
-                ) {
-                    var dateDivider = document.createElement("div");
-                    dateDivider.className = "divider text";
-                    dateDivider.innerHTML = obj.datetime.toLocaleString(
-                        "ru",
-                        dateOptions
-                    );
-                    chatHistory.appendChild(dateDivider);
-                }
-
-                var message;
-
-                if (obj.user_id != currentUserID) {
-                    message = createOtherMessageElement(obj);
-                } else {
-                    message = createMyMessageElement(obj);
-                }
-
-                chatHistory.appendChild(message);
-            });
-
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+            displayAllMesseges(newMessageArray);
         },
         function() {
             //TODO
@@ -242,14 +244,106 @@ function getMessages() {
     );
 }
 
+function displaySelectedUserMessages(messagArray) {
+    var chatHistory = document.getElementById("chat-history");
+    chatHistory.innerHTML = "";
+    var dateOptions = {
+        day: "numeric",
+        month: "numeric",
+        year: "2-digit"
+    };
+
+    messagArray.forEach(function(item, i, arr) {
+        if (
+            i == 0 ||
+            item.datetime.toLocaleString("ru", dateOptions) !=
+                arr[i - 1].datetime.toLocaleString("ru", dateOptions)
+        ) {
+            var dateDivider = document.createElement("div");
+            dateDivider.className = "divider text";
+            dateDivider.innerHTML = messageArray[i].datetime.toLocaleString(
+                "ru",
+                dateOptions
+            );
+            chatHistory.appendChild(dateDivider);
+        }
+        var message;
+        if (item.user_id != currentUserID) {
+            message = createOtherMessageElement(item);
+        } else {
+            message = createMyMessageElement(item);
+        }
+
+        chatHistory.appendChild(message);
+    });
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function displayAllMesseges(newMessageArray) {
+    if (messageArray && newMessageArray.length == messageArray.length) {
+        return;
+    }
+
+    var chatHistory = document.getElementById("chat-history");
+    var i;
+    var dateOptions = {
+        day: "numeric",
+        month: "numeric",
+        year: "2-digit"
+    };
+
+    if (!messageArray) {
+        messageArray = newMessageArray.slice();
+        i = 0;
+    } else if (newMessageArray.length < messageArray.length) {
+        chatHistory.innerHTML = "";
+        messageArray = newMessageArray.slice();
+        i = 0;
+    } else if (newMessageArray.length > messageArray.length) {
+        i = messageArray.length;
+        messageArray = messageArray.concat(
+            newMessageArray.slice(messageArray.length)
+        );
+    }
+
+    for (i; i < newMessageArray.length; i++) {
+        if (
+            i == 0 ||
+            messageArray[i].datetime.toLocaleString("ru", dateOptions) !=
+                messageArray[i - 1].datetime.toLocaleString("ru", dateOptions)
+        ) {
+            var dateDivider = document.createElement("div");
+            dateDivider.className = "divider text";
+            dateDivider.innerHTML = messageArray[i].datetime.toLocaleString(
+                "ru",
+                dateOptions
+            );
+            chatHistory.appendChild(dateDivider);
+        }
+        var message;
+
+        if (messageArray[i].user_id != currentUserID) {
+            message = createOtherMessageElement(messageArray[i]);
+            messageConter++;
+        } else {
+            message = createMyMessageElement(messageArray[i]);
+        }
+
+        chatHistory.appendChild(message);
+    }
+
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+    document.getElementById("countMessages").innerHTML = messageConter;
+}
+
 sendMessageBtn.addEventListener("click", function() {
     var message = messageInput.value;
     if (message != "") {
-        var d = new Date();
         createPosRequest(
             "messages",
             {
-                datetime: d.toISOString(),
+                datetime: new Date().toISOString(),
                 message: message,
                 user_id: currentUserID
             },
@@ -307,4 +401,38 @@ function createOtherMessageElement(obj) {
     messageContainer.appendChild(avatar);
     messageContainer.appendChild(messageInfoContainer);
     return messageContainer;
+}
+
+function displayCurrentTime() {
+    var date = new Date();
+    document.getElementById("currentTime").innerHTML =
+        "<time>" +
+        formatTime(date.getHours(), date.getMinutes(), date.getSeconds()) +
+        "</time>";
+}
+
+function displayOnlineTime() {
+    var onlineSeconds = new Date() - loginTime;
+    var hours = Math.floor(
+        (onlineSeconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    var minutes = Math.floor((onlineSeconds % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((onlineSeconds % (1000 * 60)) / 1000);
+    document.getElementById("onlineTime").innerHTML =
+        "Online <time>" + formatTime(hours, minutes, seconds) + "</time>";
+}
+
+function formatTime(hours, minutes, seconds) {
+    if (hours <= 9) {
+        hours = "0" + hours;
+    }
+
+    if (minutes <= 9) {
+        minutes = "0" + minutes;
+    }
+
+    if (seconds <= 9) {
+        seconds = "0" + seconds;
+    }
+    return hours + ":" + minutes + ":" + seconds;
 }
